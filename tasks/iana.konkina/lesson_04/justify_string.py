@@ -29,25 +29,37 @@ def count_matches(line_x, line_y):
 
     return matches_table
 
+
 def get_longest_subst(line_x, line_y, matches_table, ind_x, ind_y):
+    """
+    Returns found matches,
+    Decrease on 1 ind_x or ind_y or both every recursive call,
+    After m + n recursive calls one of the indexes == 0,
+    Which will lead to exit
+    """
     if matches_table[ind_x][ind_y] == 0:
         return ' '
     if line_x[ind_x].strip() == line_y[ind_y].strip():
-        return '%s%s' % (get_longest_subst(line_x, line_y, matches_table, ind_x - 1, ind_y - 1), line_x[ind_x])
+        return line_x[ind_x] + get_longest_subst(line_x, line_y, matches_table, ind_x - 1, ind_y - 1)
     elif line_x[ind_x].strip() != line_y[ind_y].strip() and matches_table[ind_x][ind_y - 1] > matches_table[ind_x - 1][ind_y]:
         return get_longest_subst(line_x, line_y, matches_table, ind_x, ind_y - 1)
-    elif line_x[ind_x] != line_y[ind_y] and matches_table[ind_x][ind_y - 1 ] < matches_table[ind_x - 1][ind_y]:
+    else:
         return get_longest_subst(line_x, line_y, matches_table, ind_x - 1, ind_y)
-    return ''
 
-line_x = ' world'
-line_y = ' wolf'
-matches = count_matches(line_x, line_y)
 
-l=''
-for x in reversed(range(0, len(line_x))):
-    for y in reversed(range(0, len(line_y))):
-        print(x, y)
-        l += get_longest_subst(line_x, line_y, matches, x, y)
+def main(line_x, line_y):
+    """
+    Entry point
+    """
+    result = ''
+    matches = count_matches(line_x, line_y)
+    longest_match_len = matches[len(line_x)-1][len(line_y)-1]
+    for x in reversed(range(0, len(line_x))):
+        for y in reversed(range(0, len(line_y))):
+            result += get_longest_subst(line_x, line_y, matches, x, y)
+            if len(result) > longest_match_len:
+                break
+        break
+    return result
 
-print(l)
+print(main(' world', ' wolf'))
